@@ -1,28 +1,60 @@
 <template>
   <div class="bg d-flex justify-content-center align-items-center">
     <div class="container p-3">
-      <div class="p-1" style="height: 33.3333%">
-        <el-input size="small" v-model="form.username" suffix-icon="el-icon-user" />
+      <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
+        <Input v-model="form.username" icon="ios-contact" placeholder="输入账号" @on-enter="login"/>
       </div>
-      <div class="p-1" style="height: 33.3333%">
-        <el-input size="small" v-model="form.password" type="password" suffix-icon="el-icon-lock" />
+      <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
+        <Input v-model="form.password" password type="password" placeholder="输入密码" @on-enter="login"/>
       </div>
-      <div class="p-1" style="height: 33.3333%">
-        <el-button type="primary" size="small" class="w-100">登陆</el-button>
+      <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
+        <Input v-model="form.captcha" placeholder="输入验证码" @on-enter="login"/>
+        <img :src="captchaUrl" style="height: 32px;" class="ml-2" @click="captcha" />
+      </div>
+      <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
+        <Button type="primary" long @click="login" :loading="loading">登陆</Button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import api from '@/api'
+import {LOGIN, LOGIN_CAPTCHA} from "@/helpers/url";
+import { Input, Button } from 'view-design'
+import {ok} from "@/helpers/resp";
 export default {
   name: 'Login',
+  components: { Input, Button },
   data () {
     return {
       form: {
-        username: '',
-        password: ''
-      }
+        username: 'admin',
+        password: 'admin',
+        captcha: ''
+      },
+      captchaUrl: '',
+      loading: false
+    }
+  },
+  created() {
+    this.captcha()
+  },
+  methods: {
+    login () {
+      this.loading = true
+      api(this.form).post(LOGIN).then(resp => {
+        console.log(resp)
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    captcha () {
+      api({}).get(LOGIN_CAPTCHA).then(resp => {
+        if (ok(resp)) {
+          this.captchaUrl = 'data:image/png;base64,' + resp.data.data
+        }
+      })
     }
   }
 }
@@ -38,7 +70,6 @@ export default {
 }
 .container{
   width: 300px;
-  height: 188px;
   background: #eee;
   border-radius: 5px;
   opacity: 0.8;
