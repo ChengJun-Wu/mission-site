@@ -4,10 +4,32 @@ Vue.use(VueRouter)
 
 const routes = [
   {
+    path: '/',
+    redirect: '/backend/index',
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue')
-  }
+  },
+  {
+    path: '/backend',
+    name: 'Backend',
+    redirect: '/backend/index',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Backend.vue'),
+    children: [
+      {
+        path: 'index',
+        name: 'BackendIndex',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Backend/Index')
+      },
+      {
+        path: 'server',
+        name: 'BackendServer',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Backend/Server')
+      }
+    ]
+  },
 ]
 
 const router = new VueRouter({

@@ -2,17 +2,19 @@
   <div class="bg d-flex justify-content-center align-items-center">
     <div class="container p-3">
       <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
-        <Input v-model="form.username" icon="ios-contact" placeholder="输入账号" @on-enter="login"/>
+        <a-input v-model="form.username" icon="ios-contact" placeholder="输入账号" @pressEnter="login">
+          <a-icon slot="suffix" type="user" />
+        </a-input>
       </div>
       <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
-        <Input v-model="form.password" password type="password" placeholder="输入密码" @on-enter="login"/>
+        <a-input-password v-model="form.password" placeholder="输入密码" @pressEnter="login"/>
       </div>
       <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
-        <Input v-model="form.captcha" placeholder="输入验证码" @on-enter="login"/>
+        <a-input v-model="form.captcha" placeholder="输入验证码" @pressEnter="login"/>
         <img :src="captchaUrl" style="height: 32px;" class="ml-2" @click="captcha" />
       </div>
       <div class="mb-2 p-1 d-flex justify-content-center align-items-center">
-        <Button type="primary" long @click="login" :loading="loading">登陆</Button>
+        <a-button type="primary" block @click="login" :loading="loading">登陆</a-button>
       </div>
     </div>
   </div>
@@ -21,11 +23,9 @@
 <script>
 import api from '@/api'
 import {LOGIN, LOGIN_CAPTCHA} from "@/helpers/url";
-import { Input, Button } from 'view-design'
 import {ok} from "@/helpers/resp";
 export default {
   name: 'Login',
-  components: { Input, Button },
   data () {
     return {
       form: {
@@ -44,7 +44,9 @@ export default {
     login () {
       this.loading = true
       api(this.form).post(LOGIN).then(resp => {
-        console.log(resp)
+        if (ok(resp)) {
+          this.$router.push('backend')
+        }
       }).finally(() => {
         this.loading = false
       })

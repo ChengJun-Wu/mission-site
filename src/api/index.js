@@ -3,7 +3,7 @@ import qs from 'qs'
 import { messageIfFail, redirectIfNeedLogin } from '@/helpers/resp'
 
 axios.defaults.baseURL = process.env.NODE_ENV === 'development' ? '/api/' : '/adm/'
-// axios.defaults.withCredentials = true
+axios.defaults.withCredentials = true
 
 export default function (params) {
     return {
