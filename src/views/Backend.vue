@@ -3,8 +3,8 @@
     <a-layout id="components-layout-demo-side" style="min-height: 100vh">
       <a-layout-sider v-model="collapsed" :collapsible="true">
         <div class="logo" />
-        <a-menu theme="dark" :default-selected-keys="selectKeys" mode="inline" @select="selectMenu">
-          <a-menu-item v-for="(menu,key) in menus" :key="key">
+        <a-menu theme="dark" :selectedKeys="selectKeys" mode="inline" @select="selectMenu">
+          <a-menu-item v-for="menu in menus" v-if="menu.show" :key="menu.route">
             <a-icon :type="menu.icon" />
             <span>{{ menu.name }}</span>
           </a-menu-item>
@@ -48,31 +48,21 @@
 import api from '@/api'
 import {LOGIN_LOGOUT, LOGIN_USER} from "@/helpers/url"
 import {ok, redirectIfNeedLogin} from "@/helpers/resp"
+import menu from '@/helpers/menu'
 export default {
   name: "Backend",
   data () {
     return {
-      menus: {
-        server: {
-          route: 'backend/server',
-          name: '服务器',
-          icon: 'desktop',
-          desc: '执行脚本的服务器'
-        }
-      },
-      current: {
-        route: 'backend/index',
-        name: 'mission',
-        icon: 'home',
-        desc: '服务器和脚本管理工具'
-      },
+      menus: menu,
+      current: {},
       selectKeys: [],
       collapsed: false,
       user: {}
     }
   },
-  created() {
+  mounted() {
     this.checkLogin()
+    this.initTitle(this.$route.path)
   },
   methods: {
     checkLogin () {
@@ -88,10 +78,19 @@ export default {
       })
     },
     selectMenu (item) {
-      this.current = this.menus[item.key]
       this.$router.push({
-        path: this.current.route
+        path: item.key
       })
+      this.initTitle(item.key)
+    },
+    initTitle(route)
+    {
+      this.selectKeys = [route]
+      for (let i in this.menus) {
+        if (this.menus[i].route === route) {
+          this.current = this.menus[i]
+        }
+      }
     }
   }
 }
